@@ -1,0 +1,17 @@
+core/**/*.js
+core/**/*.js.map
+router/**/*.js.map
+router/**/*.js
+.env
+app.js
+app.js.map
+config/**/*.js
+config/**/*.js.map
+asyncDB.js
+asyncDB.js.map
+logger/**/*.js
+logger/**/*.js.map
+utils/**/*.js
+utils/**/*.js.map
+services/**/*.js
+services/**/*.js.map

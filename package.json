@@ -1,0 +1,48 @@
+{
+  "name": "backend-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsnode": "ts-node",
+    "build:tsc": "tsc",
+    "knex": "knex",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && ts-node app.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/joi": "^14.3.4",
+    "@types/jsonwebtoken": "^8.3.8",
+    "@types/knex": "^0.16.1",
+    "@types/koa": "^2.11.2",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-router": "^7.4.0",
+    "@types/lodash": "^4.14.149",
+    "@types/uuid": "^7.0.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "camelcase-keys": "^6.2.1",
+    "dotenv": "^8.2.0",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.20.11",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^8.0.8",
+    "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "pg": "^7.18.2",
+    "snake-case": "^3.0.3",
+    "snakecase-keys": "^3.1.2",
+    "uuid": "^7.0.2",
+    "winston": "^3.2.1"
+  }
+}
