@@ -23,6 +23,7 @@
     "@types/lodash": "^4.14.149",
     "@types/uuid": "^7.0.0",
     "jest": "^25.4.0",
+    "ts-jest": "^25.4.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
   },
