@@ -2,13 +2,12 @@
   "name": "backend-template",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "tsnode": "ts-node",
-    "build:tsc": "tsc",
-    "knex": "knex",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && ts-node app.ts"
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "ts-node app.ts",
+    "start": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
