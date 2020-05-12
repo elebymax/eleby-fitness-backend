@@ -87,3 +87,18 @@ export const userLogin = async (ctx: Context): Promise<void> => {
     }
   }
 };
+
+export const getUserInfo = async (ctx: Context): Promise<void> => {
+  const user: User = ctx.user;
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: `Getting User info successfully`,
+    data: <UserWithToken>{
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+    }
+  }
+};
