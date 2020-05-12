@@ -10,4 +10,12 @@ router.post('/',
   validator.createMeal,
   controller.createMeal);
 
+router.get('/',
+  checkToken,
+  controller.listMeals);
+
+router.delete('/:id',
+  checkToken,
+  controller.deleteMeal);
+
 export default router.middleware();

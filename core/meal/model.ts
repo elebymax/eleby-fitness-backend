@@ -68,3 +68,21 @@ export const selectMealsByParam = async (param: Meal): Promise<Meal[] | null> =>
     throw new AppError('Internal server error', 500);
   }
 };
+
+export const updateMealWithValueByParam = async (value: Meal, param: Meal): Promise<string | null> => {
+  try {
+    const query = knex
+      .update(snakecaseKeys(value))
+      .from('meals')
+      .where(snakecaseKeys(param))
+      .returning('id');
+
+    const [id]: string[] = await query;
+
+    return id ? id : null;
+  } catch (err) {
+    logger('selectMealByParam')
+      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
+    throw new AppError('Internal server error', 500);
+  }
+};

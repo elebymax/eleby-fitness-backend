@@ -1,11 +1,12 @@
 import {Context} from "koa";
-import {insertMeal, selectMealByParam} from "./model";
+import {insertMeal, selectMealByParam, selectMealsByParam, updateMealWithValueByParam} from "./model";
 import * as utils from '../../utils';
 import _ from 'lodash';
 import BadRequestError from "../error/BadRequestError";
 import {User} from "../user/type";
 import {Meal} from "./type";
 import {ResponseFormat} from "../error/type";
+import NotFoundError from "../error/NotFoundError";
 
 export const createMeal = async (ctx: Context): Promise<void> => {
   const user: User  = ctx.user;
@@ -49,5 +50,51 @@ export const createMeal = async (ctx: Context): Promise<void> => {
     success: true,
     message: 'Creating meal successfully',
     data: meal
+  }
+};
+
+export const listMeals = async (ctx: Context): Promise<void> => {
+  const user: User  = ctx.user;
+
+  const meals: Meal[] = await selectMealsByParam({
+    userId: user.id,
+    deletedAt: null,
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Listing meals successfully',
+    data: _.orderBy(meals, ['createdAt'], ['desc'])
+  }
+};
+
+export const deleteMeal = async (ctx: Context): Promise<void> => {
+  const user: User  = ctx.user;
+  const mealId: string = ctx.params.id;
+
+  //check if meal is existed
+  const meal: Meal = await selectMealByParam({
+    id: mealId,
+    userId: user.id,
+    deletedAt: null,
+  });
+  if (!meal) {
+    throw new NotFoundError('The meal is not existed', 404);
+  }
+
+  //soft delete the meal
+  await updateMealWithValueByParam({
+    deletedAt: utils.generateTimestampTz()
+  }, {
+    id: mealId,
+    deletedAt: null
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Deleting meal successfully',
+    data: {}
   }
 };
