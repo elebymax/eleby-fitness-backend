@@ -14,7 +14,7 @@ export const createDiary = async (ctx: Context, next: () => Promise<void>): Prom
 
   await Joi.validate(ctx.request.body, schema, async (err) => {
     if (err) {
-      logger('meal.validator.createMeal').error(err);
+      logger('meal.validator.createDiary').error(err);
       throw new BadRequestError(`The field '${err.details[0].context ? err.details[0].context.key : ''}' is not valid`, 400);
     }
 
