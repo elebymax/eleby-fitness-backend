@@ -5,10 +5,9 @@ import {User, UserWithToken} from "./type";
 import * as utils from '../../utils';
 import _ from 'lodash';
 import BadRequestError from "../error/BadRequestError";
-import jwt from 'jsonwebtoken';
-import config from '../../config';
+import NotFoundError from "../error/NotFoundError";
 
-export const userRegister = async (ctx: Context) => {
+export const userRegister = async (ctx: Context): Promise<void> => {
   const {
     name,
     email,
@@ -47,21 +46,44 @@ export const userRegister = async (ctx: Context) => {
     deletedAt: null
   });
 
-  //create token
-  const token: string = jwt.sign({
-    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 60 * 7),
-    data: { userId: insertedUser.id }
-  }, config.app.jwtSecret);
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Register user successfully',
+    data: <UserWithToken>{
+      token: utils.generateToken(insertedUser.id),
+      name: insertedUser.name,
+      email: insertedUser.email,
+      createdAt: insertedUser.createdAt
+    }
+  }
+};
+
+export const userLogin = async (ctx: Context): Promise<void> => {
+  const {
+    email,
+    password
+  } = ctx.request.body;
+
+  const user: User = await selectUserByParam({
+    email: email,
+    password: utils.encodePassword(password),
+    deletedAt: null
+  });
+
+  if (!user) {
+    throw new NotFoundError('Email or password is not correct', 404);
+  }
 
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
     message: 'Register user successfully',
     data: <UserWithToken>{
-      token: token,
-      name: insertedUser.name,
-      email: insertedUser.email,
-      createdAt: insertedUser.createdAt
+      token: utils.generateToken(user.id),
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
     }
   }
 };

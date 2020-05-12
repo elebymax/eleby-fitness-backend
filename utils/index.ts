@@ -3,6 +3,7 @@ import generateTimestampTz from './generateTimestampTz';
 import generateHash from './generateHash';
 import paddingZero from './paddingZero';
 import encodePassword from './encodePassword';
+import generateToken from "./generateToken";
 
 export {
   generateUUID,
@@ -10,4 +11,5 @@ export {
   generateHash,
   paddingZero,
   encodePassword,
+  generateToken
 }
