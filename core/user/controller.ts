@@ -49,7 +49,7 @@ export const userRegister = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Register user successfully',
+    message: 'User register successfully',
     data: <UserWithToken>{
       token: utils.generateToken(insertedUser.id),
       name: insertedUser.name,
@@ -78,7 +78,7 @@ export const userLogin = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Register user successfully',
+    message: 'User login successfully',
     data: <UserWithToken>{
       token: utils.generateToken(user.id),
       name: user.name,
