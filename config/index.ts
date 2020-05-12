@@ -7,6 +7,7 @@ interface Config {
     baseApi: string,
     uuidNamespace: string,
     passwordKey: string,
+    jwtSecret: string,
   },
   postgres: {
     host: string,
@@ -23,6 +24,7 @@ export default {
     baseApi: process.env.APP_BASE_API,
     uuidNamespace: process.env.APP_UUID_NAMESPACE,
     passwordKey: process.env.APP_PASSWORD_KEY,
+    jwtSecret: process.env.APP_JWT_SECRET,
   },
   postgres: {
     host : process.env.PG_HOST,

@@ -7,3 +7,7 @@ export interface User {
   updatedAt?: string,
   deletedAt?: string
 }
+
+export interface UserWithToken extends User {
+  token?: string,
+}

@@ -1,10 +1,12 @@
 import {Context} from "koa";
 import {insertUser, selectUserByParam} from "./model";
 import {ResponseFormat} from "../error/type";
-import {User} from "./type";
+import {User, UserWithToken} from "./type";
 import * as utils from '../../utils';
 import _ from 'lodash';
 import BadRequestError from "../error/BadRequestError";
+import jwt from 'jsonwebtoken';
+import config from '../../config';
 
 export const userRegister = async (ctx: Context) => {
   const {
@@ -39,16 +41,24 @@ export const userRegister = async (ctx: Context) => {
     password: utils.encodePassword(password),
   });
 
+  //find user
   const insertedUser: User = await selectUserByParam({
     id: insertedUserId,
     deletedAt: null
   });
 
+  //create token
+  const token: string = jwt.sign({
+    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 60 * 7),
+    data: { userId: insertedUser.id }
+  }, config.app.jwtSecret);
+
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
     message: 'Register user successfully',
-    data: <User>{
+    data: <UserWithToken>{
+      token: token,
       name: insertedUser.name,
       email: insertedUser.email,
       createdAt: insertedUser.createdAt
