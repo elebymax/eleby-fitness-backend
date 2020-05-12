@@ -18,7 +18,7 @@ export default async (ctx: any, next: any) => {
 
       const responseBuilder: ResponseFormat = {
         success: false,
-        message: '內部程式錯誤',
+        message: 'Internal server error',
         data: {},
         error: responseError
       };
@@ -35,7 +35,7 @@ export default async (ctx: any, next: any) => {
 
       const responseBuilder: ResponseFormat = {
         success: false,
-        message: '資料欄位或內容錯誤',
+        message: 'Bad request error',
         data: {},
         error: responseError
       };
@@ -52,7 +52,7 @@ export default async (ctx: any, next: any) => {
 
       const responseBuilder: ResponseFormat = {
         success: false,
-        message: '沒有權限的操作',
+        message: 'Unauthorized error',
         data: {},
         error: responseError
       };
@@ -69,7 +69,7 @@ export default async (ctx: any, next: any) => {
 
       const responseBuilder: ResponseFormat = {
         success: false,
-        message: '拒絕執行的操作',
+        message: 'Forbidden error',
         data: {},
         error: responseError
       };
@@ -86,7 +86,7 @@ export default async (ctx: any, next: any) => {
 
       const responseBuilder: ResponseFormat = {
         success: false,
-        message: '請求失敗',
+        message: 'Not found error',
         data: {},
         error: responseError
       };
