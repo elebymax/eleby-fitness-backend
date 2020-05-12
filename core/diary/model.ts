@@ -1,95 +1,79 @@
-import {Meal} from "./type";
+import {Diary} from "./type";
 import AppError from "../error/AppError";
 import logger from '../../logger';
 import {knex} from '../../db/asyncDB';
 import snakecaseKeys from "snakecase-keys";
 import camelcaseKeys from "camelcase-keys";
 
-export const insertMeal = async (meal: Meal): Promise<string> => {
+export const insertDiary = async (diary: Diary): Promise<string> => {
   try {
     const query = knex
-      .insert(snakecaseKeys(meal))
-      .from('meals')
+      .insert(snakecaseKeys(diary))
+      .from('diaries')
       .returning('id');
 
     const [id]: string[] = await query;
 
     return id;
   } catch (err) {
-    logger('insertMeal')
+    logger('insertDiary')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
 };
 
-export const insertMeals = async (meals: Meal[]): Promise<string[]> => {
+export const insertDiaries = async (diaries: Diary[]): Promise<string[]> => {
   try {
     const query = knex
-      .insert(snakecaseKeys(meals))
-      .from('meals')
+      .insert(snakecaseKeys(diaries))
+      .from('diaries')
       .returning('id');
 
     return await query;
   } catch (err) {
-    logger('insertMeals')
+    logger('insertDiaries')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
 };
 
-export const selectMealByParam = async (param: Meal): Promise<Meal | null> => {
+export const selectDiaryByParam = async (param: Diary): Promise<Diary | null> => {
   try {
     const query = knex
       .select('*')
-      .from('meals')
+      .from('diaries')
       .where(snakecaseKeys(param));
 
-    const [meal]: Meal[] = await query;
+    const [diary]: Diary[] = await query;
 
-    return meal ? camelcaseKeys(meal) : null;
+    return diary ? camelcaseKeys(diary) : null;
   } catch (err) {
-    logger('selectMealByParam')
+    logger('selectDiaryByParam')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
 };
 
-export const selectMealsByParam = async (param: Meal): Promise<Meal[] | null> => {
+export const selectDiariesByParam = async (param: Diary): Promise<Diary[] | null> => {
   try {
     const query = knex
       .select('*')
-      .from('meals')
-      .where(snakecaseKeys(param));
-
-    return camelcaseKeys(await query);
-  } catch (err) {
-    logger('selectMealsByParam')
-      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
-    throw new AppError('Internal server error', 500);
-  }
-};
-
-export const selectMealsByIdsAndParam = async (ids: string[], param: Meal): Promise<Meal[] | null> => {
-  try {
-    const query = knex
-      .select('*')
-      .from('meals')
-      .whereIn('id', ids)
+      .from('diaries')
       .where(snakecaseKeys(param));
 
     return camelcaseKeys(await query);
   } catch (err) {
-    logger('selectMealsByIdsAndParam')
+    logger('selectDiariesByParam')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
 };
 
-export const updateMealWithValueByParam = async (value: Meal, param: Meal): Promise<string | null> => {
+export const updateDiaryWithValueByParam = async (value: Diary, param: Diary): Promise<string | null> => {
   try {
     const query = knex
       .update(snakecaseKeys(value))
-      .from('meals')
+      .from('diaries')
       .where(snakecaseKeys(param))
       .returning('id');
 
@@ -97,7 +81,7 @@ export const updateMealWithValueByParam = async (value: Meal, param: Meal): Prom
 
     return id ? id : null;
   } catch (err) {
-    logger('updateMealWithValueByParam')
+    logger('updateDiaryWithValueByParam')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
