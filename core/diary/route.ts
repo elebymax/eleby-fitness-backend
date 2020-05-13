@@ -18,10 +18,17 @@ router.get('/',
 
 router.get('/:id',
   checkToken,
+  validator.getDiary,
   controller.getDiary);
 
 router.put('/:id',
   checkToken,
+  validator.modifyDiary,
   controller.modifyDiary);
+
+router.delete('/:id',
+  checkToken,
+  validator.deleteDiary,
+  controller.deleteDiary);
 
 export default router.middleware();

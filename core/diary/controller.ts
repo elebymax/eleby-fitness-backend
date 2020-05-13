@@ -17,7 +17,7 @@ import {selectMealsByIdsAndParam} from "../meal/model";
 import {
   insertDiaryMealRefs,
   selectDiaryMealRefsByDiaryIdsAndParam,
-  selectDiaryMealRefsByParam, updateDiaryMealRefWithValueByParam
+  selectDiaryMealRefsByParam, updateDiaryMealRefsWithValueByParam
 } from "../diaryMealRef/model";
 import {Meal} from "../meal/type";
 import {QueryItem} from "../queryParser";
@@ -246,7 +246,7 @@ export const modifyDiary = async (ctx: Context): Promise<void> => {
   //delete refs
   const willBeDeletedMealIds: string[] = _.difference(previousMealIds, mealIds);
   for (let i=0; i<willBeDeletedMealIds.length; i++) {
-    await updateDiaryMealRefWithValueByParam({
+    await updateDiaryMealRefsWithValueByParam({
       deletedAt: utils.generateTimestampTz()
     }, {
       diaryId: id,
@@ -292,5 +292,43 @@ export const modifyDiary = async (ctx: Context): Promise<void> => {
       ...targetDiary,
       meals: targetMeal
     }
+  };
+};
+
+export const deleteDiary = async (ctx: Context): Promise<void> => {
+  const user: User = ctx.user;
+  const id: string = ctx.params.id;
+
+  //find diary
+  const diary: Diary = await selectDiaryByParam({
+    id: id,
+    userId: user.id,
+    deletedAt: null
+  });
+  if (!diary) {
+    throw new NotFoundError('The Diary is not existed', 404);
+  }
+
+  //delete diary
+  await updateDiariesWithValueByParam({
+    deletedAt: utils.generateTimestampTz()
+  }, {
+    id: id,
+    deletedAt: null
+  });
+
+  //delete refs
+  await updateDiaryMealRefsWithValueByParam({
+    deletedAt: utils.generateTimestampTz()
+  }, {
+    diaryId: id,
+    deletedAt: null
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Deleting diary successfully',
+    data: {}
   };
 };

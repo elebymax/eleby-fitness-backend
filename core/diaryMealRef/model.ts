@@ -51,7 +51,7 @@ export const selectDiaryMealRefsByDiaryIdsAndParam = async (diaryIds: string[], 
   }
 };
 
-export const updateDiaryMealRefWithValueByParam = async (value: DiaryMealRef, param: DiaryMealRef): Promise<string | null> => {
+export const updateDiaryMealRefsWithValueByParam = async (value: DiaryMealRef, param: DiaryMealRef): Promise<string | null> => {
   try {
     const query = knex
       .update(snakecaseKeys(value))
@@ -63,7 +63,7 @@ export const updateDiaryMealRefWithValueByParam = async (value: DiaryMealRef, pa
 
     return id ? id : null;
   } catch (err) {
-    logger('updateDiaryMealRefWithValueByParam')
+    logger('updateDiaryMealRefsWithValueByParam')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
