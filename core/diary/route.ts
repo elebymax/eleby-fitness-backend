@@ -2,6 +2,7 @@ import Router from "koa-router";
 import * as controller from './controller';
 import * as validator from './validator';
 import {checkToken} from "../permission/controller";
+import {parse} from "../queryParser/controller";
 
 const router = new Router({ prefix: '/diaries' });
 
@@ -12,6 +13,7 @@ router.post('/',
 
 router.get('/',
   checkToken,
+  parse,
   controller.listDiaries);
 
 export default router.middleware();

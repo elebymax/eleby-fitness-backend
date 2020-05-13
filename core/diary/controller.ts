@@ -1,5 +1,10 @@
 import {Context} from "koa";
-import {insertDiary, selectDiariesByIdsAndParam, selectDiariesByParam, selectDiaryByParam} from "./model";
+import {
+  countDiariesByParamAndQueryItem,
+  insertDiary,
+  selectDiariesByParamAndQueryItem,
+  selectDiaryByParam
+} from "./model";
 import * as utils from '../../utils';
 import _ from 'lodash';
 import BadRequestError from "../error/BadRequestError";
@@ -11,6 +16,7 @@ import {DiaryMealRef} from "../diaryMealRef/type";
 import {selectMealsByIdsAndParam} from "../meal/model";
 import {insertDiaryMealRefs, selectDiaryMealRefsByDiaryIdsAndParam} from "../diaryMealRef/model";
 import {Meal} from "../meal/type";
+import {QueryItem} from "../queryParser";
 
 export const createDiary = async (ctx: Context): Promise<void> => {
   const user: User = ctx.user;
@@ -76,12 +82,13 @@ export const createDiary = async (ctx: Context): Promise<void> => {
 
 export const listDiaries = async (ctx: Context): Promise<void> => {
   const user: User = ctx.user;
+  const queryItem: QueryItem = ctx.queryItem;
 
   //find diaries
-  const diaries: Diary[] = await selectDiariesByParam({
+  const diaries: Diary[] = await selectDiariesByParamAndQueryItem({
     userId: user.id,
     deletedAt: null,
-  });
+  }, queryItem);
   if (!diaries || !diaries.length) {
     ctx.status = 200;
     ctx.body = <ResponseFormat>{
@@ -119,11 +126,20 @@ export const listDiaries = async (ctx: Context): Promise<void> => {
     }
   });
 
+  //get total count
+  const total: number = await countDiariesByParamAndQueryItem({
+    userId: user.id,
+    deletedAt: null,
+  }, queryItem);
+
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
     message: 'Listing diaries successfully',
-    data: formatedDiaries
+    data: formatedDiaries,
+    paginate: {
+      total: total
+    }
   };
   return;
 };

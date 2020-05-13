@@ -4,6 +4,8 @@ import logger from '../../logger';
 import {knex} from '../../db/asyncDB';
 import snakecaseKeys from "snakecase-keys";
 import camelcaseKeys from "camelcase-keys";
+import {QueryItem} from "../queryParser";
+import {addCondition, addCountCondition} from "../queryParser/controller";
 
 export const insertDiary = async (diary: Diary): Promise<string> => {
   try {
@@ -80,6 +82,40 @@ export const selectDiariesByIdsAndParam = async (ids: string[], param: Diary): P
     return camelcaseKeys(await query);
   } catch (err) {
     logger('selectDiariesByIdsAndParam')
+      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
+    throw new AppError('Internal server error', 500);
+  }
+};
+
+export const selectDiariesByParamAndQueryItem = async (param: Diary, queryItem: QueryItem): Promise<Diary[] | null> => {
+  try {
+    let query = knex
+      .select('*')
+      .from('diaries')
+      .where(snakecaseKeys(param));
+
+    query = await addCondition(query, queryItem);
+
+    return camelcaseKeys(await query);
+  } catch (err) {
+    logger('selectDiariesByParamAndQueryItem')
+      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
+    throw new AppError('Internal server error', 500);
+  }
+};
+
+export const countDiariesByParamAndQueryItem = async (param: Diary, queryItem: QueryItem): Promise<number> => {
+  try {
+    let query = knex
+      .count({count: '*'})
+      .from('diaries')
+      .where(snakecaseKeys(param));
+
+    query = await addCountCondition(query, queryItem);
+
+    return +(await query)[0]['count'] || 0;
+  } catch (err) {
+    logger('countDiariesByParamAndQueryItem')
       .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
     throw new AppError('Internal server error', 500);
   }
