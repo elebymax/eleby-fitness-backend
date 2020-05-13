@@ -20,4 +20,8 @@ router.get('/:id',
   checkToken,
   controller.getDiary);
 
+router.put('/:id',
+  checkToken,
+  controller.modifyDiary);
+
 export default router.middleware();

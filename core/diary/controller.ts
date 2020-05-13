@@ -3,7 +3,7 @@ import {
   countDiariesByParamAndQueryItem,
   insertDiary,
   selectDiariesByParamAndQueryItem,
-  selectDiaryByParam
+  selectDiaryByParam, updateDiariesWithValueByParam
 } from "./model";
 import * as utils from '../../utils';
 import _ from 'lodash';
@@ -17,7 +17,7 @@ import {selectMealsByIdsAndParam} from "../meal/model";
 import {
   insertDiaryMealRefs,
   selectDiaryMealRefsByDiaryIdsAndParam,
-  selectDiaryMealRefsByParam
+  selectDiaryMealRefsByParam, updateDiaryMealRefWithValueByParam
 } from "../diaryMealRef/model";
 import {Meal} from "../meal/type";
 import {QueryItem} from "../queryParser";
@@ -193,6 +193,104 @@ export const getDiary = async (ctx: Context): Promise<void> => {
     data: <DiaryWithMeal>{
       ...diary,
       meals: meals
+    }
+  };
+};
+
+export const modifyDiary = async (ctx: Context): Promise<void> => {
+  const user: User = ctx.user;
+  const id: string = ctx.params.id;
+  const {
+    title,
+    content,
+    mealIds
+  } = ctx.request.body;
+
+  //find diary
+  const previousDiary: Diary = await selectDiaryByParam({
+    id: id,
+    userId: user.id,
+    deletedAt: null
+  });
+  if (!previousDiary) {
+    throw new NotFoundError('The Diary is not existed', 404);
+  }
+
+  //update diary
+  const newDiaryData: Diary = _.omitBy({
+    title,
+    content
+  }, _.isNil);
+  await updateDiariesWithValueByParam(newDiaryData, {
+    id: id
+  });
+
+  //find refs
+  const previousDiaryMealRefs: DiaryMealRef[] = await selectDiaryMealRefsByParam({
+    diaryId: id,
+    deletedAt: null
+  });
+  const previousMealIds: string[] = _.chain(previousDiaryMealRefs).map('mealId').uniq().value();
+
+  //create refs
+  const willBeCreatedMealIds: string[] = _.difference(mealIds, previousMealIds);
+  const formatedDiaryMealRefs: DiaryMealRef[] = willBeCreatedMealIds.map((willBeCreatedMealId: string) => {
+    return <DiaryMealRef>{
+      id: utils.generateUUID(),
+      diaryId: id,
+      mealId: willBeCreatedMealId
+    }
+  });
+  await insertDiaryMealRefs(formatedDiaryMealRefs);
+
+  //delete refs
+  const willBeDeletedMealIds: string[] = _.difference(previousMealIds, mealIds);
+  for (let i=0; i<willBeDeletedMealIds.length; i++) {
+    await updateDiaryMealRefWithValueByParam({
+      deletedAt: utils.generateTimestampTz()
+    }, {
+      diaryId: id,
+      mealId: willBeDeletedMealIds[i],
+      deletedAt: null
+    })
+  }
+
+  //find new diary
+  const targetDiary: Diary = await selectDiaryByParam({
+    id: id
+  });
+
+  //find refs
+  const diaryMealRefs: DiaryMealRef[] = await selectDiaryMealRefsByParam({
+    diaryId: targetDiary.id,
+    deletedAt: null
+  });
+  if (!diaryMealRefs || !diaryMealRefs.length) {
+    ctx.status = 200;
+    ctx.body = <ResponseFormat>{
+      success: true,
+      message: 'Modifying diary successfully',
+      data: <DiaryWithMeal>{
+        ...targetDiary,
+        meals: []
+      }
+    };
+    return;
+  }
+
+  //find meals
+  const targetMealIds: string[] = _.chain(diaryMealRefs).map('mealId').uniq().value();
+  const targetMeal: Meal[] = await selectMealsByIdsAndParam(targetMealIds, {
+    deletedAt: null
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Modifying diary successfully',
+    data: <DiaryWithMeal>{
+      ...targetDiary,
+      meals: targetMeal
     }
   };
 };
