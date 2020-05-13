@@ -35,6 +35,22 @@ export const selectDiaryMealRefsByParam = async (param: DiaryMealRef): Promise<D
   }
 };
 
+export const selectDiaryMealRefsByDiaryIdsAndParam = async (diaryIds: string[], param: DiaryMealRef): Promise<DiaryMealRef[] | null> => {
+  try {
+    const query = knex
+      .select('*')
+      .from('diary_meal_refs')
+      .whereIn('diary_id', diaryIds)
+      .where(snakecaseKeys(param));
+
+    return camelcaseKeys(await query);
+  } catch (err) {
+    logger('selectDiaryMealRefsByDiaryIdsAndParam')
+      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
+    throw new AppError('Internal server error', 500);
+  }
+};
+
 export const updateDiaryMealRefWithValueByParam = async (value: DiaryMealRef, param: DiaryMealRef): Promise<string | null> => {
   try {
     const query = knex

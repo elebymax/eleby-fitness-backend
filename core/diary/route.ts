@@ -10,4 +10,8 @@ router.post('/',
   validator.createDiary,
   controller.createDiary);
 
+router.get('/',
+  checkToken,
+  controller.listDiaries);
+
 export default router.middleware();

@@ -69,6 +69,22 @@ export const selectDiariesByParam = async (param: Diary): Promise<Diary[] | null
   }
 };
 
+export const selectDiariesByIdsAndParam = async (ids: string[], param: Diary): Promise<Diary[] | null> => {
+  try {
+    const query = knex
+      .select('*')
+      .from('diaries')
+      .whereIn('id', ids)
+      .where(snakecaseKeys(param));
+
+    return camelcaseKeys(await query);
+  } catch (err) {
+    logger('selectDiariesByIdsAndParam')
+      .error(JSON.stringify({message: 'Something wrong when executing SQL query', properties: err}, null, 2));
+    throw new AppError('Internal server error', 500);
+  }
+};
+
 export const updateDiaryWithValueByParam = async (value: Diary, param: Diary): Promise<string | null> => {
   try {
     const query = knex
