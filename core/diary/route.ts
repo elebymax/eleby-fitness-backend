@@ -16,4 +16,8 @@ router.get('/',
   parse,
   controller.listDiaries);
 
+router.get('/:id',
+  checkToken,
+  controller.getDiary);
+
 export default router.middleware();

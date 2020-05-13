@@ -14,7 +14,11 @@ import {ResponseFormat} from "../error/type";
 import NotFoundError from "../error/NotFoundError";
 import {DiaryMealRef} from "../diaryMealRef/type";
 import {selectMealsByIdsAndParam} from "../meal/model";
-import {insertDiaryMealRefs, selectDiaryMealRefsByDiaryIdsAndParam} from "../diaryMealRef/model";
+import {
+  insertDiaryMealRefs,
+  selectDiaryMealRefsByDiaryIdsAndParam,
+  selectDiaryMealRefsByParam
+} from "../diaryMealRef/model";
 import {Meal} from "../meal/type";
 import {QueryItem} from "../queryParser";
 
@@ -142,4 +146,53 @@ export const listDiaries = async (ctx: Context): Promise<void> => {
     }
   };
   return;
+};
+
+export const getDiary = async (ctx: Context): Promise<void> => {
+  const user: User = ctx.user;
+  const id: string = ctx.params.id;
+
+  //find diary
+  const diary: Diary = await selectDiaryByParam({
+    id: id,
+    userId: user.id,
+    deletedAt: null
+  });
+  if (!diary) {
+    throw new NotFoundError('The Diary is not existed', 404);
+  }
+
+  //find refs
+  const diaryMealRefs: DiaryMealRef[] = await selectDiaryMealRefsByParam({
+    diaryId: diary.id,
+    deletedAt: null
+  });
+  if (!diaryMealRefs || !diaryMealRefs.length) {
+    ctx.status = 200;
+    ctx.body = <ResponseFormat>{
+      success: true,
+      message: 'Getting diaries successfully',
+      data: <DiaryWithMeal>{
+        ...diary,
+        meals: []
+      }
+    };
+    return;
+  }
+
+  //find meals
+  const mealIds: string[] = _.chain(diaryMealRefs).map('mealId').uniq().value();
+  const meals: Meal[] = await selectMealsByIdsAndParam(mealIds, {
+    deletedAt: null
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: 'Getting diaries successfully',
+    data: <DiaryWithMeal>{
+      ...diary,
+      meals: meals
+    }
+  };
 };
