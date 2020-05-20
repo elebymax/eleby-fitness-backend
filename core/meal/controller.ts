@@ -1,5 +1,11 @@
 import {Context} from "koa";
-import {insertMeal, selectMealByParam, selectMealsByParam, updateMealWithValueByParam} from "./model";
+import {
+  countMealsByParamAndQueryItem,
+  insertMeal,
+  selectMealByParam,
+  selectMealsByParamAndQueryItem,
+  updateMealWithValueByParam
+} from "./model";
 import * as utils from '../../utils';
 import _ from 'lodash';
 import BadRequestError from "../error/BadRequestError";
@@ -7,6 +13,7 @@ import {User} from "../user/type";
 import {Meal} from "./type";
 import {ResponseFormat} from "../error/type";
 import NotFoundError from "../error/NotFoundError";
+import {QueryItem} from "../queryParser";
 
 export const createMeal = async (ctx: Context): Promise<void> => {
   const user: User  = ctx.user;
@@ -55,17 +62,26 @@ export const createMeal = async (ctx: Context): Promise<void> => {
 
 export const listMeals = async (ctx: Context): Promise<void> => {
   const user: User  = ctx.user;
+  const queryItem: QueryItem = ctx.queryItem;
 
-  const meals: Meal[] = await selectMealsByParam({
+  const meals: Meal[] = await selectMealsByParamAndQueryItem({
     userId: user.id,
     deletedAt: null,
-  });
+  }, queryItem);
+
+  const total: number = await countMealsByParamAndQueryItem({
+    userId: user.id,
+    deletedAt: null,
+  }, queryItem);
 
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
     message: 'Listing meals successfully',
-    data: _.orderBy(meals, ['createdAt'], ['desc'])
+    data: meals,
+    paginate: {
+      total: total
+    }
   }
 };
 
@@ -110,16 +126,6 @@ export const modifyMeal = async (ctx: Context): Promise<void> => {
     fat
   } = ctx.request.body;
 
-  //check is meal name already been used
-  const isMealNameDuplicate: boolean = !_.isEmpty(await selectMealByParam({
-    userId: user.id,
-    name: name,
-    deletedAt: null
-  }));
-  if (isMealNameDuplicate) {
-    throw new BadRequestError(`The meal's name is already been used`, 400);
-  }
-
   //check if meal is existed
   const meal: Meal = await selectMealByParam({
     id: mealId,
@@ -128,6 +134,16 @@ export const modifyMeal = async (ctx: Context): Promise<void> => {
   });
   if (!meal) {
     throw new NotFoundError('The meal is not existed', 404);
+  }
+
+  //check is meal name already been used
+  const sameNameMeal: Meal = await selectMealByParam({
+    userId: user.id,
+    name: name,
+    deletedAt: null
+  });
+  if (mealId !== sameNameMeal.id) {
+    throw new BadRequestError(`The meal's name is already been used`, 400);
   }
 
   //update meal
