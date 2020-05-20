@@ -38,7 +38,7 @@ export const createDiary = async (ctx: Context): Promise<void> => {
     deletedAt: null
   }));
   if (isDiaryNameDuplicate) {
-    throw new BadRequestError(`Diary's name already been used`, 400);
+    throw new BadRequestError(`The name of diary is already been used`, 400);
   }
 
   //check if meals are belongs to user
@@ -76,7 +76,7 @@ export const createDiary = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Creating diary successfully',
+    message: 'The diary have been successfully created',
     data: <DiaryWithMeal>{
       ...diary,
       meals: meals
@@ -97,7 +97,7 @@ export const listDiaries = async (ctx: Context): Promise<void> => {
     ctx.status = 200;
     ctx.body = <ResponseFormat>{
       success: true,
-      message: 'Listing diaries successfully',
+      message: 'The diaries have been successfully listed',
       data: []
     };
     return;
@@ -139,7 +139,7 @@ export const listDiaries = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Listing diaries successfully',
+    message: 'The diaries have been successfully listed',
     data: formatedDiaries,
     paginate: {
       total: total
@@ -171,7 +171,7 @@ export const getDiary = async (ctx: Context): Promise<void> => {
     ctx.status = 200;
     ctx.body = <ResponseFormat>{
       success: true,
-      message: 'Getting diaries successfully',
+      message: 'The diary has been successfully fetched',
       data: <DiaryWithMeal>{
         ...diary,
         meals: []
@@ -189,7 +189,7 @@ export const getDiary = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Getting diaries successfully',
+    message: 'The diary have been successfully fetched',
     data: <DiaryWithMeal>{
       ...diary,
       meals: meals
@@ -269,7 +269,7 @@ export const modifyDiary = async (ctx: Context): Promise<void> => {
     ctx.status = 200;
     ctx.body = <ResponseFormat>{
       success: true,
-      message: 'Modifying diary successfully',
+      message: 'The diary has been successfully modified',
       data: <DiaryWithMeal>{
         ...targetDiary,
         meals: []
@@ -287,7 +287,7 @@ export const modifyDiary = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Modifying diary successfully',
+    message: 'The diary has been successfully modified',
     data: <DiaryWithMeal>{
       ...targetDiary,
       meals: targetMeal
@@ -328,7 +328,7 @@ export const deleteDiary = async (ctx: Context): Promise<void> => {
   ctx.status = 200;
   ctx.body = <ResponseFormat>{
     success: true,
-    message: 'Deleting diary successfully',
+    message: 'The diary has been successfully deleted',
     data: {}
   };
 };
