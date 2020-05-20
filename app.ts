@@ -24,7 +24,7 @@ koa.use(cors({
   exposeHeaders: ['WWW-Authenticate', 'Server-Authorization', 'Access-Control-Allow-Origin'],
   maxAge: 5,
   credentials: true,
-  allowMethods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowHeaders: ['Origin', 'Content-Type', 'Authorization', 'Accept'],
 }));
 koa.use(router);

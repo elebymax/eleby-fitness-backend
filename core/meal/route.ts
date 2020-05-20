@@ -14,6 +14,11 @@ router.get('/',
   checkToken,
   controller.listMeals);
 
+router.put('/:id',
+  checkToken,
+  validator.modifyMeal,
+  controller.modifyMeal);
+
 router.delete('/:id',
   checkToken,
   controller.deleteMeal);
