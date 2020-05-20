@@ -17,4 +17,9 @@ router.get('/',
   checkToken,
   controller.getUserInfo);
 
+router.patch('/password',
+  checkToken,
+  validator.changePassword,
+  controller.changePassword);
+
 export default router.middleware();

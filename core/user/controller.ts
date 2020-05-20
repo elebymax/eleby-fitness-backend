@@ -1,5 +1,5 @@
 import {Context} from "koa";
-import {insertUser, selectUserByParam} from "./model";
+import {insertUser, selectUserByParam, updateUsersWithValueByParam} from "./model";
 import {ResponseFormat} from "../error/type";
 import {User, UserWithToken} from "./type";
 import * as utils from '../../utils';
@@ -100,5 +100,24 @@ export const getUserInfo = async (ctx: Context): Promise<void> => {
       email: user.email,
       createdAt: user.createdAt,
     }
+  }
+};
+
+export const changePassword = async (ctx: Context): Promise<void> => {
+  const user: User = ctx.user;
+  const password: string = ctx.request.body.password;
+
+  await updateUsersWithValueByParam({
+    password: utils.encodePassword(password),
+    updatedAt: utils.generateTimestampTz()
+  }, {
+    id: user.id
+  });
+
+  ctx.status = 200;
+  ctx.body = <ResponseFormat>{
+    success: true,
+    message: `The password has been successfully changed`,
+    data: {}
   }
 };

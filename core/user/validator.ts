@@ -35,3 +35,18 @@ export const userLogin = async (ctx: Context, next: () => Promise<void>): Promis
     await next();
   });
 };
+
+export const changePassword = async (ctx: Context, next: () => Promise<void>): Promise<void> => {
+  const schema = Joi.object().keys({
+    password: Joi.string().max(255).required()
+  });
+
+  await Joi.validate(ctx.request.body, schema, async (err) => {
+    if (err) {
+      logger('user.validator.changePassword').error(err);
+      throw new BadRequestError(`The field '${err.details[0].context ? err.details[0].context.key : ''}' is not valid`, 400);
+    }
+
+    await next();
+  });
+};
